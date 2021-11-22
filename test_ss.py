@@ -1,5 +1,7 @@
 from appium import webdriver
+from appium.webdriver.common.touch_action import TouchAction
 from selenium.webdriver.common.by import By
+
 
 # 今日头条app测试
 desired_cap = {
@@ -14,4 +16,6 @@ desired_cap = {
 driver = webdriver.Remote("http://127.0.0.1:4723/wd/hub",desired_cap)
 driver.implicitly_wait(10)
 
-el3 = driver.find_element(By.XPATH,'//android.view.View[@content-desc="小视频"]').click()
+#el3 = driver.find_element(By.XPATH,'//android.view.View[@content-desc="小视频"]').click()
+action = TouchAction(driver)
+action.press(x=500,y=850).move_to(x=500,y=50).release().perform()
