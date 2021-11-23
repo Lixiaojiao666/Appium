@@ -107,5 +107,39 @@ class TestDingWei():
         print(f"当前股票代码为09988的股票的股价为：{current_price}")
         assert float(current_price)<200
 
+    def test_myinfo(self):
+        '''
+        1. 点击我的，进入到个人信息页面
+        2. 点击登录，进入到登录页面
+        3. 输入用户名，输入密码
+        4. 点击登录
+        :return:
+        '''
+        #使用text定位 “我的”
+        #self.driver.find_element_by_android_uiautomator('new UiSelector().text("我的")').click()
+        #使用组合定位“我的”：id 和 text
+        #self.driver.find_element_by_android_uiautomator('new UiSelector().resourceId("com.xueqiu.android:id/tab_name").text("我的")').click()
+        #使用组合定位“我的”：class 和 text
+        #self.driver.find_element_by_android_uiautomator('new UiSelector().className("android.widget.TextView").text("我的")').click()
+        #使用父子关系定位“我的”
+        #self.driver.find_element_by_android_uiautomator('new UiSelector().className("android.widget.RelativeLayout").childSelector(text("我的"))').click()
+        # 使用兄弟关系定位“我的”
+        self.driver.find_element_by_android_uiautomator('new UiSelector().resourceId("com.xueqiu.android:id/tab_icon").fromParent(text("我的"))').click()
+        self.driver.find_element_by_android_uiautomator('new UiSelector().textContains("帐号密码")').click()
+        self.driver.find_element_by_android_uiautomator('new UiSelector().resourceId("com.xueqiu.android:id/login_account")').send_keys('123456')
+        self.driver.find_element_by_android_uiautomator('new UiSelector().resourceId("com.xueqiu.android:id/login_password")').send_keys('123456')
+        self.driver.find_element_by_android_uiautomator('new UiSelector().text("登录")').click()
+
+    def test_scroll_find_element(self):
+
+        self.driver.find_element_by_android_uiautomator('new UiSelector().resourceId("com.xueqiu.android:id/title_text").text("关注")').click()
+        sleep(2)
+        self.driver.find_element_by_android_uiautomator('new UiSelector().resourceId("com.xueqiu.android:id/empty_button").text("去看看")').click()
+        self.driver.find_element_by_android_uiautomator('new UiScrollable(new UiSelector().'
+                                                        'scrollable(true).instance(0)).'
+                                                        'scrollIntoView(new UiSelector().text("薪者").instance(0))').click()
+        sleep(3)
+
+
 if __name__ == '__main__':
     pytest.main()
