@@ -5,6 +5,7 @@ from appium.webdriver.common.mobileby import MobileBy
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
+from hamcrest import *
 
 
 class TestWebDriverWait:
@@ -44,9 +45,10 @@ class TestWebDriverWait:
         ele = WebDriverWait(self.driver,10).until(lambda x:x.find_element(*locator))
         print(ele.text)
         price = float(ele.text)
-
+        expect_price = 200
         # 获取元素的文本信息，就是价格，然后转化为float
         #price = float(self.driver.find_element(*locator).text)
         # 断言股价小于200
         print(price)
-        assert price < 200
+        assert price < expect_price
+        assert_that(price,close_to(expect_price,80))
