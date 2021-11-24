@@ -1,7 +1,9 @@
 from time import sleep
 
+import pytest
 from appium import webdriver
 from appium.webdriver.common.mobileby import MobileBy
+from hamcrest import *
 from selenium.webdriver.common.by import By
 
 
@@ -9,6 +11,7 @@ class TestParam:
     def setup(self):
         desired_cap = {
             "platformName": "android",
+            #设备名字可以是任意的，不能确定是哪个设备，只有udid可以唯一确定启用哪个设备
             "deviceName": "127.0.0.1:7555",
             "appPackage": "com.xueqiu.android",
             "appActivity": ".common.MainActivity",
@@ -22,7 +25,15 @@ class TestParam:
             # 修改语言为汉语
             "unicodeKeyBoard": True,
             # 重置语言
-            "resetKeyBoard": True
+            "resetKeyBoard": True,
+            #两次请求的间隔时间，即超时时间（默认60秒），如果网络不好，或者上传文件，可以设置的超时时间长点，这样就不会总是报错
+            "newCommandTimeout":300,
+            #设备唯一标识，设置后，将启动设置的设备而不是默认设备。
+            "udid":"127.0.0.1:7555",
+            #首次启动app的时候，一般会有弹窗提示获取位置权限，录音权限，获取通讯录权限等弹窗
+            #该参数设置为true，可以自动接受弹窗提示
+            #特别注意：如果noReset为true，那么这个参数就不生效
+            "autoGrantPermissions":True
         }
         self.driver = webdriver.Remote("http://127.0.0.1:4723/wd/hub", desired_cap)
         self.driver.implicitly_wait(15)
@@ -31,7 +42,11 @@ class TestParam:
         pass
         #self.driver.quit()
 
-    def test_param(self):
+    @pytest.mark.parametrize('searchkey,type,expect_price',[
+        ('alibaba','BABA',130.00),
+        ('xiaomi','40209',100.00)
+    ])
+    def test_param(self,searchkey,type,expect_price):
         '''
         1.打开雪球应用
         2.点击 搜索框
@@ -41,16 +56,9 @@ class TestParam:
         :return:
         '''
         self.driver.find_element(MobileBy.ID, "com.xueqiu.android:id/tv_search").click()
-        self.driver.find_element(MobileBy.ID, "com.xueqiu.android:id/search_input_text").send_keys('阿里巴巴')
+        self.driver.find_element(MobileBy.ID, "com.xueqiu.android:id/search_input_text").send_keys(searchkey)
         sleep(3)
-        locator = (MobileBy.XPATH,'/hierarchy/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.RelativeLayout/android.widget.LinearLayout/androidx.viewpager.widget.ViewPager/android.widget.RelativeLayout/android.view.ViewGroup/androidx.recyclerview.widget.RecyclerView/android.widget.LinearLayout[1]/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.FrameLayout[1]/android.widget.RelativeLayout/android.widget.LinearLayout[2]/android.widget.TextView[1]')
-        # WebDriverWait(self.driver,10).until(expected_conditions.element_to_be_clickable(locator))
+        current_price=self.driver.find_element(MobileBy.XPATH,f"//*[@text='{type}']/../../..//*[@resource-id='com.xueqiu.android:id/current_price']").text
+        assert_that(float(current_price),close_to(expect_price,expect_price*0.1))
 
-        print(locator.text)
-        price = float(locator.text)
-        expect_price = 200
-        # 获取元素的文本信息，就是价格，然后转化为float
-        # price = float(self.driver.find_element(*locator).text)
-        # 断言股价小于200
-        print(price)
-        assert price < expect_price
+
