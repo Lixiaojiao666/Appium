@@ -51,11 +51,11 @@ class TestBrowser:
         self.driver.find_element(MobileBy.XPATH,'//*[@resource-id="phone-number"]').send_keys("15588886666")
         self.driver.find_element(MobileBy.XPATH, '//*[@resource-id="code"]').send_keys("123456")
         self.driver.find_element(MobileBy.XPATH, '//*[@text="立即开户"]').click()
-
+        '''
 
         #奇怪，我写的好像没用到嵌入的webview页面，不需要切换上下文，不需要切换windows，也成功了
         #老师写的,在我这里通不过
-        '''
+
         self.driver.find_element(MobileBy.XPATH,'//*[@text="交易"]').click()
         A_locator = (MobileBy.XPATH,'//*[@id="Layout_app_3V4"]/div/div/ul/li[1]/div[2]/h1')
         print(self.driver.contexts)
